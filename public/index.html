@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warzone Rank Tracker</title>
+    <style>
+        body {
+            background: transparent;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            position: relative;
+            text-align: center;
+        }
+        .rank-image {
+            width: 100%;
+            max-width: 800px;
+        }
+        .sr-overlay, .daily-sr-overlay {
+            position: absolute;
+            top: 62%;
+            font-size: 32px;
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+        .sr-overlay { left: 27%; }
+        .daily-sr-overlay { left: 72%; }
+        #license-container {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+        }
+        #license-container input {
+            padding: 5px;
+            margin-top: 10px;
+        }
+    </style>
+    <script>
+        const rankImages = {
+            "Bronze 1": "images/bronze1.png",
+            "Bronze 2": "images/bronze2.png",
+            "Bronze 3": "images/bronze3.png",
+            "Silver 1": "images/silver1.png",
+            "Silver 2": "images/silver2.png",
+            "Silver 3": "images/silver3.png",
+            "Gold 1": "images/gold1.png",
+            "Gold 2": "images/gold2.png",
+            "Gold 3": "images/gold3.png",
+            "Platinum 1": "images/platinum1.png",
+            "Platinum 2": "images/platinum2.png",
+            "Platinum 3": "images/platinum3.png",
+            "Diamond 1": "images/diamond1.png",
+            "Diamond 2": "images/diamond2.png",
+            "Diamond 3": "images/diamond3.png",
+            "Crimson 1": "images/crimson1.png",
+            "Crimson 2": "images/crimson2.png",
+            "Crimson 3": "images/crimson3.png",
+            "Iridescent": "images/iridescent.png"
+        };
+
+        async function validateLicense() {
+            const licenseKey = document.getElementById('license-key').value;
+            const response = await fetch('/validate-key', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ licenseKey })
+            });
+            const data = await response.json();
+            
+            if (data.valid) {
+                localStorage.setItem('licenseKey', licenseKey);
+                document.getElementById('license-container').style.display = 'none';
+                fetchSRData();
+            } else {
+                alert('Invalid License Key!');
+            }
+        }
+
+        async function fetchSRData() {
+            const response = await fetch('/sr-data');
+            const data = await response.json();
+            
+            if (rankImages[data.rank]) {
+                document.getElementById('rank-image').src = rankImages[data.rank];
+            }
+            document.getElementById('current-sr').innerText = data.currentSR;
+            document.getElementById('daily-sr').innerText = data.dailySR;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedKey = localStorage.getItem('licenseKey');
+            if (savedKey) {
+                document.getElementById('license-container').style.display = 'none';
+                fetchSRData();
+            }
+        });
+    </script>
+</head>
+<body>
+    <div id="license-container">
+        <h2>Enter License Key</h2>
+        <input type="text" id="license-key" placeholder="Enter your key">
+        <button onclick="validateLicense()">Submit</button>
+    </div>
+    <div class="container">
+        <img id="rank-image" class="rank-image" src="" alt="Rank Image">
+        <div id="current-sr" class="sr-overlay">0</div>
+        <div id="daily-sr" class="daily-sr-overlay">0</div>
+    </div>
+</body>
+</html>
