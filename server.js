@@ -8,8 +8,8 @@ dotenv.config();
 
 const app = express();
 const port = 3000;
-app.use(express.static('public'));
-app.use(express.json());
+app.use(express.static('public'));  // Serve static files from the 'public' folder
+app.use(express.json());  // Parse incoming JSON requests
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
@@ -35,7 +35,16 @@ let srData = {
 app.post('/validate-key', async (req, res) => {
     const { licenseKey } = req.body;
     const validKey = await License.findOne({ key: licenseKey });
-    res.json({ valid: !!validKey });
+
+    if (!validKey) {
+        return res.status(404).json({ valid: false, message: "License key not found" });
+    }
+
+    if (validKey.used) {
+        return res.status(403).json({ valid: false, message: "License key already used" });
+    }
+
+    res.json({ valid: true, message: "License key is valid" });
 });
 
 // Endpoint to get SR data
@@ -43,10 +52,11 @@ app.get('/sr-data', (req, res) => {
     res.json(srData);
 });
 
-// Endpoint to update SR data from the terminal
+// Endpoint to update SR data from the form input
 app.post('/update-sr', async (req, res) => {
     const { startSR, currentSR, licenseKey } = req.body;
     const validKey = await License.findOne({ key: licenseKey });
+
     if (!validKey) {
         return res.status(403).json({ error: "Invalid license key" });
     }
@@ -76,7 +86,7 @@ app.post('/update-sr', async (req, res) => {
         { name: "Crimson 3", sr: 8100 },
         { name: "Iridescent", sr: 10000 }
     ];
-    
+
     for (let i = ranks.length - 1; i >= 0; i--) {
         if (currentSR >= ranks[i].sr) {
             srData.rank = ranks[i].name;
@@ -85,32 +95,15 @@ app.post('/update-sr', async (req, res) => {
     }
 
     console.log(`Updated SR: ${currentSR}, Rank: ${srData.rank}, Daily SR Gain: ${srData.dailySR}`);
-    res.sendStatus(200);
+    res.status(200).json({ success: true });
+});
+
+// Serve the SR input form (index.html)
+app.get('/', (req, res) => {
+    res.sendFile('public/index.html', { root: __dirname });
 });
 
 // Start server
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
-    askForSRInput();
 });
-
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
-
-function askForSRInput() {
-    rl.question('Enter your license key: ', (licenseKey) => {
-        rl.question('Enter starting SR: ', (startSR) => {
-            rl.question('Enter current SR: ', (currentSR) => {
-                fetch(`http://localhost:${port}/update-sr`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ startSR: parseInt(startSR), currentSR: parseInt(currentSR), licenseKey })
-                }).then(() => askForSRInput());
-            });
-        });
-    });
-}
-
-askForSRInput();
