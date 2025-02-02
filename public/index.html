@@ -152,7 +152,7 @@
 
         let socket;
         function connectWebSocket() {
-            socket = new WebSocket('ws://localhost:3000'); // Connect to WebSocket server
+            socket = new WebSocket('wss://warzonesrtracker.onrender.com');
 
             socket.onmessage = function (event) {
                 const data = JSON.parse(event.data); // Parse incoming JSON data
