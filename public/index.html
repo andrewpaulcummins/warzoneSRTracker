@@ -152,8 +152,8 @@
 
         let socket;
         function connectWebSocket() {
-            socket = new WebSocket('wss://warzonesrtracker.onrender.com');
-            // socket = new WebSocket('ws://localhost:3000'); 
+            // socket = new WebSocket('wss://warzonesrtracker.onrender.com');
+            socket = new WebSocket('ws://localhost:3000'); 
 
             socket.onmessage = function (event) {
                 const data = JSON.parse(event.data); // Parse incoming JSON data
@@ -194,7 +194,9 @@
 </head>
 
 <body>
-
+    <div id="license-container">
+     
+    </div>
     <div class="container">
         <img id="rank-image" class="rank-image" src="" alt="Rank Image">
         <div id="current-sr" class="sr-overlay">0</div>
