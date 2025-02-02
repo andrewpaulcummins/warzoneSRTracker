@@ -1,10 +1,13 @@
 import express from 'express';
-import fs from 'fs';
 import http from 'http';
-import { WebSocketServer } from 'ws'; // Corrected import for WebSocketServer
+import { WebSocketServer } from 'ws'; 
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { MongoClient } from 'mongodb';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 // Get __dirname in ES modules by converting the import.meta.url
 const __filename = fileURLToPath(import.meta.url);
@@ -28,10 +31,51 @@ const clients = new Set();
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Connect to MongoDB
+const client = new MongoClient(process.env.MONGO_URI);
+const db = client.db('warzoneTracker');
+const licenseCollection = db.collection('license_keys');
+
+// Middleware to handle MongoDB connection
+async function connectToDB() {
+    try {
+        await client.connect();
+        console.log('Connected to MongoDB');
+    } catch (err) {
+        console.error('MongoDB connection failed:', err);
+    }
+}
+
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Validate the license key
+app.post("/validate-license", async (req, res) => {
+    const { licenseKey } = req.body;
+
+    console.log("License Key to validate:", licenseKey);  // Log the key
+
+    try {
+        // Check if the license exists and is not already used
+        const license = await licenseCollection.findOne({ key: licenseKey, used: false });
+        console.log(license);
+
+        if (license) {
+            // Mark the license as used
+            await licenseCollection.updateOne({ key: licenseKey }, { $set: { used: true } });
+
+            res.status(200).json({ valid: true });
+        } else {
+            res.status(400).json({ valid: false, message: "Invalid or already used license key" });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ valid: false, message: "Server error" });
+    }
+});
+
+// Fetch SR data
 app.get("/sr-data", (req, res) => {
     console.log("Sending SR Data:", srData);
     res.json({
@@ -42,8 +86,9 @@ app.get("/sr-data", (req, res) => {
     });
 });
 
+// Update SR data
 app.post("/update-sr", (req, res) => {
-    const { startSR, currentSR, licenseKey } = req.body;
+    const { startSR, currentSR } = req.body;
 
     if (typeof currentSR !== "number" || isNaN(currentSR)) {
         return res.status(400).json({ error: "Invalid SR data" });
@@ -89,6 +134,7 @@ app.post("/update-sr", (req, res) => {
     res.status(200).json({ message: "SR data updated successfully" });
 });
 
+// WebSocket communication
 wss.on("connection", (ws) => {
     clients.add(ws);
     ws.send(JSON.stringify(srData));
@@ -98,6 +144,7 @@ wss.on("connection", (ws) => {
     });
 });
 
+// Update SR data for all connected clients
 function updateSRData(newData) {
     srData = { ...srData, ...newData };
 
@@ -113,6 +160,7 @@ function updateSRData(newData) {
     });
 }
 
-server.listen(3000, () => {
+server.listen(3000, async () => {
+    await connectToDB(); // Ensure MongoDB connection before starting server
     console.log("Server is running on port 3000");
 });
