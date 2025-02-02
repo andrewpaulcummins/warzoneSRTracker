@@ -46,9 +46,15 @@ async function connectToDB() {
     }
 }
 
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+// Debugging: Log all documents in the collection
+async function logAllLicenses() {
+    try {
+        const allLicenses = await licenseCollection.find().toArray();
+        console.log("All licenses in DB:", allLicenses);
+    } catch (err) {
+        console.error('Error fetching licenses:', err);
+    }
+}
 
 // Validate the license key
 app.post("/validate-license", async (req, res) => {
@@ -59,7 +65,7 @@ app.post("/validate-license", async (req, res) => {
     try {
         // Check if the license exists and is not already used
         const license = await licenseCollection.findOne({ key: licenseKey, used: false });
-        console.log(license);
+        console.log("License found:", license);
 
         if (license) {
             // Mark the license as used
@@ -70,7 +76,7 @@ app.post("/validate-license", async (req, res) => {
             res.status(400).json({ valid: false, message: "Invalid or already used license key" });
         }
     } catch (err) {
-        console.error(err);
+        console.error('Error during license validation:', err);
         res.status(500).json({ valid: false, message: "Server error" });
     }
 });

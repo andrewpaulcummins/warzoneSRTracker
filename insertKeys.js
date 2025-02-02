@@ -15,14 +15,22 @@ const licenseSchema = new mongoose.Schema({
   key: String,
   used: { type: Boolean, default: false }
 });
-const License = mongoose.model("License", licenseSchema);
 
-// Function to insert a new license key
+// Specify the database and collection where the schema will be used
+const License = mongoose.model("License", licenseSchema, "license_keys");
+
+// Function to insert a new license key into the "license_keys" collection
 async function insertLicenseKey(key) {
-  await License.create({ key, used: false });
-  console.log(`License key ${key} inserted successfully.`);
-  mongoose.connection.close();
+  try {
+    const newLicense = new License({ key, used: false });
+    await newLicense.save();  // Save the new license to the DB
+    console.log(`License key ${key} inserted successfully into the 'license_keys' collection.`);
+  } catch (err) {
+    console.error("Error inserting license key:", err);
+  } finally {
+    mongoose.connection.close();  // Close the connection after the operation
+  }
 }
 
 // Insert a new key (replace with your key)
-insertLicenseKey("LICENSE-KEY-12345");
+insertLicenseKey("apendii_432498223");
