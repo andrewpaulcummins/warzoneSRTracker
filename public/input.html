@@ -20,43 +20,40 @@
         }
 
         @font-face {
-            font-family: 'GOOD BRUSH';
-            src: url('fonts/GOOD BRUSH.TTF') format('ttf');
+            font-family: 'Bord';
+            src: url('fonts/Bord.ttf') format('truetype');
         }
 
         h1 {
             text-align: center;
-            font-family: 'GOOD BRUSH';
+            font-family: 'Bord';
             font-size: 2.5rem;
-            color: #00f7ff;
+            color: #a200ff;
             margin: 0 auto 20px auto;
-            /* Ensures it's centered */
             font-weight: 600;
-            text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+            text-shadow: 0 0 15px rgba(255, 143, 0, 0.8), 0 0 30px rgba(162, 0, 255, 0.6);
             display: block;
-            /* Ensures it follows the margin rules */
             width: 100%;
-            /* Ensures full width if needed */
         }
 
         form {
-            background: #2b2b2b;
+            background: linear-gradient(145deg, #2b2b2b, #3a3a3a);
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.8), inset 3px 3px 10px rgba(255, 143, 0, 0.3);
             width: 100%;
             max-width: 400px;
             text-align: left;
-            border: 2px solid #444;
+            border: 2px solid #a200ff;
         }
 
         label {
-            font-family: 'GOOD BRUSH';
+            font-family: 'Bord';
             font-size: 1.2rem;
             margin-bottom: 10px;
             display: block;
             font-weight: 500;
-            color: #f1f1f1;
+            color: #ff8f00;
         }
 
         input[type="text"],
@@ -64,9 +61,9 @@
             width: 100%;
             padding: 12px;
             margin: 8px 0 16px 0;
-            border: 2px solid #444;
+            border: 2px solid #a200ff;
             border-radius: 8px;
-            font-family: 'GOOD BRUSH';
+            font-family: 'Bord';
             font-size: 1rem;
             box-sizing: border-box;
             background-color: #333;
@@ -76,30 +73,32 @@
 
         input[type="text"]:focus,
         input[type="number"]:focus {
-            border-color: #00f7ff;
-            box-shadow: 0 0 8px rgba(0, 255, 255, 0.7);
+            border-color: #ff8f00;
+            box-shadow: 0 0 10px rgba(255, 143, 0, 0.8), 0 0 20px rgba(162, 0, 255, 0.6);
             outline: none;
         }
 
         button {
-            background-color: #00f7ff;
+            background: linear-gradient(145deg, #a200ff, #ff8f00);
             color: #1c1c1c;
             border: none;
             padding: 12px 24px;
-            font-family: 'GOOD BRUSH';
+            font-family: 'Bord';
             font-size: 1.2rem;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.1s ease;
+            transition: background 0.3s ease, transform 0.1s ease, box-shadow 0.2s ease;
+            box-shadow: 3px 3px 10px rgba(255, 143, 0, 0.8), inset 2px 2px 5px rgba(162, 0, 255, 0.4);
         }
 
         button:hover {
-            background-color: #00a8b8;
+            background: linear-gradient(145deg, #ff8f00, #a200ff);
             transform: scale(1.05);
         }
 
         button:active {
-            background-color: #008e9e;
+            background: linear-gradient(145deg, #a200ff, #ff8f00);
+            box-shadow: 2px 2px 5px rgba(255, 143, 0, 0.5);
         }
 
         #license-modal {
@@ -107,45 +106,48 @@
             top: 50%;
             left: 50%;
             width: 600px;
-            /* Increased width */
             height: 400px;
-            /* Increased height */
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.9);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 9999;
             transform: translate(-50%, -50%);
-            border-radius: 12px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(162, 0, 255, 0.8);
         }
 
         .modal-content {
-            background-color: white;
+            background: linear-gradient(145deg, #3a3a3a, #2b2b2b);
             padding: 30px;
-            /* More padding */
-            border-radius: 12px;
+            border-radius: 15px;
             text-align: center;
             width: 90%;
-            /* Slightly bigger content area */
             max-width: 450px;
-            /* Limit max width */
+            box-shadow: 5px 5px 15px rgba(255, 143, 0, 0.5), inset 3px 3px 10px rgba(162, 0, 255, 0.4);
         }
 
         #license-key {
             padding: 12px;
             width: 80%;
             font-size: 1.1rem;
+            border: 2px solid #a200ff;
+            border-radius: 8px;
+            background-color: #333;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255, 143, 0, 0.6);
         }
 
         #licenseBtn {
             margin-top: 15px;
             padding: 12px 20px;
             font-size: 1.1rem;
+            background: linear-gradient(145deg, #a200ff, #ff8f00);
+            box-shadow: 3px 3px 10px rgba(255, 143, 0, 0.8);
         }
 
-
         #licenseBtn:hover {
-            background-color: #00a8b8;
+            background: linear-gradient(145deg, #ff8f00, #a200ff);
         }
     </style>
 </head>
