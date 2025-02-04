@@ -16,8 +16,8 @@
         }
 
         @font-face {
-            font-family: 'GOOD BRUSH';
-            src: url('fonts/GOOD BRUSH.TTF') format('ttf');
+            font-family: 'Bord';
+            src: url('fonts/Bord.ttf') format('ttf');
         }
 
         .container {
@@ -33,20 +33,40 @@
         .sr-overlay,
         .daily-sr-overlay {
             position: absolute;
-            top: 43%;
-            font-family: 'GOOD BRUSH';
-            font-size: 50px;
-            color: #F8DD73;
+            top: 46%;
+            font-family: 'Bord';
+            font-size: 35px;
             font-weight: bold;
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+            color: #a200ff;
+            background: linear-gradient(90deg, #a200ff, #e0aaff, #a200ff);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 3s linear infinite;
+            
         }
 
+        @keyframes shine {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+
         .sr-overlay {
-            left: 30%;
+            left: 42%;
         }
 
         .daily-sr-overlay {
-            left: 75%;
+            left: 67%;
         }
 
         #license-container {
@@ -77,25 +97,25 @@
     </style>
     <script>
         const rankImages = {
-            "Bronze 1": "images/bronze1.png",
-            "Bronze 2": "images/bronze2.png",
-            "Bronze 3": "images/bronze3.png",
-            "Silver 1": "images/silver1.png",
-            "Silver 2": "images/silver2.png",
-            "Silver 3": "images/silver3.png",
-            "Gold 1": "images/gold1.png",
-            "Gold 2": "images/gold2.png",
-            "Gold 3": "images/gold3.png",
-            "Platinum 1": "images/platinum1.png",
-            "Platinum 2": "images/platinum2.png",
-            "Platinum 3": "images/platinum3.png",
-            "Diamond 1": "images/diamond1.png",
-            "Diamond 2": "images/diamond2.png",
-            "Diamond 3": "images/diamond3.png",
-            "Crimson 1": "images/crimson1.png",
-            "Crimson 2": "images/crimson2.png",
-            "Crimson 3": "images/crimson3.png",
-            "Iridescent": "images/iridescent.png"
+            "Bronze 1": "gogzyImages/bronze1.png",
+            "Bronze 2": "gogzyImages/bronze2.png",
+            "Bronze 3": "gogzyImages/bronze3.png",
+            "Silver 1": "gogzyImages/silver1.png",
+            "Silver 2": "gogzyImages/silver2.png",
+            "Silver 3": "gogzyImages/silver3.png",
+            "Gold 1": "gogzyImages/gold1.png",
+            "Gold 2": "gogzyImages/gold2.png",
+            "Gold 3": "gogzyImages/gold3.png",
+            "Platinum 1": "gogzyImages/platinum1.png",
+            "Platinum 2": "gogzyImages/platinum2.png",
+            "Platinum 3": "gogzyImages/platinum3.png",
+            "Diamond 1": "gogzyImages/diamond1.png",
+            "Diamond 2": "gogzyImages/diamond2.png",
+            "Diamond 3": "gogzyImages/diamond3.png",
+            "Crimson 1": "gogzyImages/crimson1.png",
+            "Crimson 2": "gogzyImages/crimson2.png",
+            "Crimson 3": "gogzyImages/crimson3.png",
+            "Iridescent": "gogzyImages/iridescent.png"
         };
 
         async function validateLicense() {
@@ -152,8 +172,8 @@
 
         let socket;
         function connectWebSocket() {
-            socket = new WebSocket('wss://warzonesrtracker.onrender.com');
-            // socket = new WebSocket('ws://localhost:3000'); 
+            // socket = new WebSocket('wss://warzonesrtracker.onrender.com');
+            socket = new WebSocket('ws://localhost:3000');
 
             socket.onmessage = function (event) {
                 const data = JSON.parse(event.data); // Parse incoming JSON data
@@ -195,7 +215,7 @@
 
 <body>
     <div id="license-container">
-     
+
     </div>
     <div class="container">
         <img id="rank-image" class="rank-image" src="" alt="Rank Image">
