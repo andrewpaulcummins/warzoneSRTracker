@@ -17,7 +17,7 @@
 
         @font-face {
             font-family: 'Bord';
-            src: url('fonts/Bord.ttf') format('ttf');
+            src: url('fonts/Bord.ttf') format('truetype');
         }
 
         .container {
@@ -33,13 +33,12 @@
         .sr-overlay,
         .daily-sr-overlay {
             position: absolute;
-            top: 45%;
+            top: 46%;
             font-family: 'Bord';
             font-weight: bold;
-            font-size: 45px;
-            text-shadow: 0 0 0.5px #fff;
-            /* Backup for other browsers */
+            font-size: 31px;
             color: #fff;
+            text-shadow: 2px 2px 5px rgba(70, 1, 83, 0.7);
         }
 
         .sr-overlay {
@@ -47,114 +46,118 @@
         }
 
         .daily-sr-overlay {
-            left: 67%;
+            left: 68%;
         }
 
-        /* Add styles for positive/negative dailySR */
         .positive-sr {
-            color: limegreen;
+            color: #00ff00; /* Bright green for positive SR */
+            font-weight: bold;
+            text-shadow: 2px 2px 5px rgba(0, 255, 0, 0.7);
         }
 
         .negative-sr {
-            color: red;
+            color: #ff0000; /* Bright red for negative SR */
+            font-weight: bold;
+            text-shadow: 2px 2px 5px rgba(255, 0, 0, 0.7);
         }
     </style>
 
     <script>
         const rankImages = {
-            "Bronze 1": "gogzyImages/bronze1.png",
-            "Bronze 2": "gogzyImages/bronze2.png",
-            "Bronze 3": "gogzyImages/bronze3.png",
-            "Silver 1": "gogzyImages/silver1.png",
-            "Silver 2": "gogzyImages/silver2.png",
-            "Silver 3": "gogzyImages/silver3.png",
-            "Gold 1": "gogzyImages/gold1.png",
-            "Gold 2": "gogzyImages/gold2.png",
-            "Gold 3": "gogzyImages/gold3.png",
-            "Platinum 1": "gogzyImages/platinum1.png",
-            "Platinum 2": "gogzyImages/platinum2.png",
-            "Platinum 3": "gogzyImages/platinum3.png",
-            "Diamond 1": "gogzyImages/diamond1.png",
-            "Diamond 2": "gogzyImages/diamond2.png",
-            "Diamond 3": "gogzyImages/diamond3.png",
-            "Crimson 1": "gogzyImages/crimson1.png",
-            "Crimson 2": "gogzyImages/crimson2.png",
-            "Crimson 3": "gogzyImages/crimson3.png",
-            "Iridescent": "gogzyImages/iridescent.png"
+            "Bronze 1": "/gogzyImages/bronze1.png",
+            "Bronze 2": "/gogzyImages/bronze2.png",
+            "Bronze 3": "/gogzyImages/bronze3.png",
+            "Silver 1": "/gogzyImages/silver1.png",
+            "Silver 2": "/gogzyImages/silver2.png",
+            "Silver 3": "/gogzyImages/silver3.png",
+            "Gold 1": "/gogzyImages/gold1.png",
+            "Gold 2": "/gogzyImages/gold2.png",
+            "Gold 3": "/gogzyImages/gold3.png",
+            "Platinum 1": "/gogzyImages/platinum1.png",
+            "Platinum 2": "/gogzyImages/platinum2.png",
+            "Platinum 3": "/gogzyImages/platinum3.png",
+            "Diamond 1": "/gogzyImages/diamond1.png",
+            "Diamond 2": "/gogzyImages/diamond2.png",
+            "Diamond 3": "/gogzyImages/diamond3.png",
+            "Crimson 1": "/gogzyImages/crimson1.png",
+            "Crimson 2": "/gogzyImages/crimson2.png",
+            "Crimson 3": "/gogzyImages/crimson3.png",
+            "Iridescent": "/gogzyImages/iridescent.png"
         };
 
         async function fetchSRData() {
-            const response = await fetch('/sr-data');
-            const data = await response.json();
+            try {
+                const response = await fetch('/sr-data');
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
-            // Check if rankImages contains the rank and update the rank image
-            if (rankImages[data.rank]) {
-                document.getElementById('rank-image').src = rankImages[data.rank];
-            }
+                const data = await response.json();
+                console.log("Fetched SR Data:", data);
 
-            // Ensure currentSR and dailySR are set correctly
-            if (data.currentSR !== undefined) {
-                document.getElementById('current-sr').innerText = data.currentSR;
-            } else {
-                document.getElementById('current-sr').innerText = '0'; // Fallback value
-            }
+                const rankImage = document.getElementById('rank-image');
+                rankImage.src = rankImages[data.rank] || "/gogzyImages/bronze1.png";
 
-            if (data.dailySR !== undefined) {
-                const dailySRText = data.dailySR >= 0 ? `+${data.dailySR}` : data.dailySR;
-                document.getElementById('daily-sr').innerText = dailySRText;
+                document.getElementById('current-sr').innerText = data.currentSR ?? '0';
+                const dailySRElement = document.getElementById('daily-sr');
+                dailySRElement.innerText = data.dailySR ?? '0';
 
-                // Apply color change based on positive/negative daily SR
-                const dailySrElement = document.getElementById('daily-sr');
-                if (data.dailySR >= 0) {
-                    dailySrElement.classList.add('positive-sr');
-                    dailySrElement.classList.remove('negative-sr');
-                } else {
-                    dailySrElement.classList.add('negative-sr');
-                    dailySrElement.classList.remove('positive-sr');
+                // Apply correct color class
+                dailySRElement.classList.remove("positive-sr", "negative-sr");
+                if (data.dailySR > 0) {
+                    dailySRElement.classList.add("positive-sr");
+                } else if (data.dailySR < 0) {
+                    dailySRElement.classList.add("negative-sr");
                 }
-            } else {
-                document.getElementById('daily-sr').innerText = '0'; // Fallback value
+            } catch (error) {
+                console.error("Error fetching SR data:", error);
             }
         }
 
         let socket;
         function connectWebSocket() {
-            // socket = new WebSocket('wss://warzonesrtracker-7g94.onrender.com');
-            socket = new WebSocket('ws://localhost:3000');
+            socket = new WebSocket('ws://warzonesrtracker-7g94.onrender.com');
+            // socket = new WebSocket('ws://localhost:3000');
 
             socket.onmessage = function (event) {
-                const data = JSON.parse(event.data); // Parse incoming JSON data
-                console.log(data.rank);
-                if (rankImages[data.rank]) {
-                    document.getElementById('rank-image').src = rankImages[data.rank];
-                }
-                document.getElementById('current-sr').innerText = data.currentSR;
+                try {
+                    const data = JSON.parse(event.data);
+                    console.log("WebSocket Data Received:", data);
 
-                // Update dailySR with color changes for positive or negative values
-                const dailySRText = data.dailySR >= 0 ? `+${data.dailySR}` : data.dailySR;
-                document.getElementById('daily-sr').innerText = dailySRText;
+                    const rankImage = document.getElementById('rank-image');
+                    rankImage.src = rankImages[data.rank] || "/gogzyImages/bronze1.png";
 
-                const dailySrElement = document.getElementById('daily-sr');
-                if (data.dailySR >= 0) {
-                    dailySrElement.classList.add('positive-sr');
-                    dailySrElement.classList.remove('negative-sr');
-                } else {
-                    dailySrElement.classList.add('negative-sr');
-                    dailySrElement.classList.remove('positive-sr');
+                    document.getElementById('current-sr').innerText = data.currentSR;
+                    const dailySRElement = document.getElementById('daily-sr');
+                    dailySRElement.innerText = data.dailySR;
+
+                    // Apply correct color class
+                    dailySRElement.classList.remove("positive-sr", "negative-sr");
+                    if (data.dailySR > 0) {
+                        dailySRElement.classList.add("positive-sr");
+                    } else if (data.dailySR < 0) {
+                        dailySRElement.classList.add("negative-sr");
+                    }
+                } catch (error) {
+                    console.error("Error processing WebSocket message:", error);
                 }
             };
 
             socket.onclose = () => {
                 console.log('WebSocket closed, reconnecting...');
-                setTimeout(connectWebSocket, 1000);  // Try to reconnect after 1 second
+                setTimeout(connectWebSocket, 1000);
             };
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('rank-image').src = "/gogzyImages/bronze1.png";
+            fetchSRData();
+            connectWebSocket();
+        });
     </script>
 </head>
 
 <body>
     <div class="container">
-        <img id="rank-image" class="rank-image" src="" alt="Rank Image">
+        <img id="rank-image" class="rank-image" src="/gogzyImages/bronze1.png" alt="Rank Image">
         <div id="current-sr" class="sr-overlay">0</div>
         <div id="daily-sr" class="daily-sr-overlay">0</div>
     </div>
