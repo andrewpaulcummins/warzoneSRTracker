@@ -23,7 +23,7 @@ let srData = {
     rank: "Bronze 1",
     currentSR: 0,
     dailySR: 0,
-    rankImage: "images/bronze1.png"
+    rankImage: "gogzyImages/bronze1.png"
 };
 
 const clients = new Set();
@@ -104,25 +104,25 @@ app.post("/update-sr", (req, res) => {
     srData.dailySR = (currentSR - startSR) || 0;
 
     const ranks = [
-        { name: "Bronze 1", sr: 0, image: "images/bronze1.png" },
-        { name: "Bronze 2", sr: 300, image: "images/bronze2.png" },
-        { name: "Bronze 3", sr: 600, image: "images/bronze3.png" },
-        { name: "Silver 1", sr: 900, image: "images/silver1.png" },
-        { name: "Silver 2", sr: 1200, image: "images/silver2.png" },
-        { name: "Silver 3", sr: 1500, image: "images/silver3.png" },
-        { name: "Gold 1", sr: 2100, image: "images/gold1.png" },
-        { name: "Gold 2", sr: 2400, image: "images/gold2.png" },
-        { name: "Gold 3", sr: 2700, image: "images/gold3.png" },
-        { name: "Platinum 1", sr: 3600, image: "images/platinum1.png" },
-        { name: "Platinum 2", sr: 4200, image: "images/platinum2.png" },
-        { name: "Platinum 3", sr: 4600, image: "images/platinum3.png" },
-        { name: "Diamond 1", sr: 5400, image: "images/diamond1.png" },
-        { name: "Diamond 2", sr: 5700, image: "images/diamond2.png" },
-        { name: "Diamond 3", sr: 6000, image: "images/diamond3.png" },
-        { name: "Crimson 1", sr: 7500, image: "images/crimson1.png" },
-        { name: "Crimson 2", sr: 7800, image: "images/crimson2.png" },
-        { name: "Crimson 3", sr: 8100, image: "images/crimson3.png" },
-        { name: "Iridescent", sr: 10000, image: "images/iridescent.png" }
+        { name: "Bronze 1", sr: 0, image: "gogzyImages/bronze1.png" },
+        { name: "Bronze 2", sr: 300, image: "gogzyImages/bronze2.png" },
+        { name: "Bronze 3", sr: 600, image: "gogzyImages/bronze3.png" },
+        { name: "Silver 1", sr: 900, image: "gogzyImages/silver1.png" },
+        { name: "Silver 2", sr: 1200, image: "gogzyImages/silver2.png" },
+        { name: "Silver 3", sr: 1500, image: "gogzyImages/silver3.png" },
+        { name: "Gold 1", sr: 2100, image: "gogzyImages/gold1.png" },
+        { name: "Gold 2", sr: 2400, image: "gogzyImages/gold2.png" },
+        { name: "Gold 3", sr: 2700, image: "gogzyImages/gold3.png" },
+        { name: "Platinum 1", sr: 3600, image: "gogzyImages/platinum1.png" },
+        { name: "Platinum 2", sr: 4200, image: "gogzyImages/platinum2.png" },
+        { name: "Platinum 3", sr: 4600, image: "gogzyImages/platinum3.png" },
+        { name: "Diamond 1", sr: 5400, image: "gogzyImages/diamond1.png" },
+        { name: "Diamond 2", sr: 5700, image: "gogzyImages/diamond2.png" },
+        { name: "Diamond 3", sr: 6000, image: "gogzyImages/diamond3.png" },
+        { name: "Crimson 1", sr: 7500, image: "gogzyImages/crimson1.png" },
+        { name: "Crimson 2", sr: 7800, image: "gogzyImages/crimson2.png" },
+        { name: "Crimson 3", sr: 8100, image: "gogzyImages/crimson3.png" },
+        { name: "Iridescent", sr: 10000, image: "gogzyImages/iridescent.png" }
     ];
 
     for (let i = ranks.length - 1; i >= 0; i--) {
