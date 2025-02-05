@@ -16,8 +16,10 @@
         }
 
         @font-face {
-            font-family: 'Bord';
-            src: url('fonts/Bord.ttf') format('truetype');
+            font-family: 'VIKING-N';
+            src: url('/fonts/VIKING-N.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
         }
 
         .container {
@@ -33,16 +35,15 @@
         .sr-overlay,
         .daily-sr-overlay {
             position: absolute;
-            top: 46%;
-            font-family: 'Bord';
-            font-weight: bold;
+            top: 44%;
+            font-family: 'VIKING-N';
             font-size: 31px;
             color: #fff;
             text-shadow: 2px 2px 5px rgba(70, 1, 83, 0.7);
         }
 
         .sr-overlay {
-            left: 42%;
+            left: 43%;
         }
 
         .daily-sr-overlay {
@@ -51,38 +52,36 @@
 
         .positive-sr {
             color: #00ff00; /* Bright green for positive SR */
-            font-weight: bold;
             text-shadow: 2px 2px 5px rgba(0, 255, 0, 0.7);
         }
 
         .negative-sr {
             color: #ff0000; /* Bright red for negative SR */
-            font-weight: bold;
             text-shadow: 2px 2px 5px rgba(255, 0, 0, 0.7);
         }
     </style>
 
     <script>
         const rankImages = {
-            "Bronze 1": "/gogzyImages/bronze1.png",
-            "Bronze 2": "/gogzyImages/bronze2.png",
-            "Bronze 3": "/gogzyImages/bronze3.png",
-            "Silver 1": "/gogzyImages/silver1.png",
-            "Silver 2": "/gogzyImages/silver2.png",
-            "Silver 3": "/gogzyImages/silver3.png",
-            "Gold 1": "/gogzyImages/gold1.png",
-            "Gold 2": "/gogzyImages/gold2.png",
-            "Gold 3": "/gogzyImages/gold3.png",
-            "Platinum 1": "/gogzyImages/platinum1.png",
-            "Platinum 2": "/gogzyImages/platinum2.png",
-            "Platinum 3": "/gogzyImages/platinum3.png",
-            "Diamond 1": "/gogzyImages/diamond1.png",
-            "Diamond 2": "/gogzyImages/diamond2.png",
-            "Diamond 3": "/gogzyImages/diamond3.png",
-            "Crimson 1": "/gogzyImages/crimson1.png",
-            "Crimson 2": "/gogzyImages/crimson2.png",
-            "Crimson 3": "/gogzyImages/crimson3.png",
-            "Iridescent": "/gogzyImages/iridescent.png"
+            "Bronze 1": "/bigPaImages/bronze1.png",
+            "Bronze 2": "/bigPaImages/bronze2.png",
+            "Bronze 3": "/bigPaImages/bronze3.png",
+            "Silver 1": "/bigPaImages/silver1.png",
+            "Silver 2": "/bigPaImages/silver2.png",
+            "Silver 3": "/bigPaImages/silver3.png",
+            "Gold 1": "/bigPaImages/gold1.png",
+            "Gold 2": "/bigPaImages/gold2.png",
+            "Gold 3": "/bigPaImages/gold3.png",
+            "Platinum 1": "/bigPaImages/platinum1.png",
+            "Platinum 2": "/bigPaImages/platinum2.png",
+            "Platinum 3": "/bigPaImages/platinum3.png",
+            "Diamond 1": "/bigPaImages/diamond1.png",
+            "Diamond 2": "/bigPaImages/diamond2.png",
+            "Diamond 3": "/bigPaImages/diamond3.png",
+            "Crimson 1": "/bigPaImages/crimson1.png",
+            "Crimson 2": "/bigPaImages/crimson2.png",
+            "Crimson 3": "/bigPaImages/crimson3.png",
+            "Iridescent": "/bigPaImages/iridescent.png"
         };
 
         async function fetchSRData() {
@@ -94,7 +93,7 @@
                 console.log("Fetched SR Data:", data);
 
                 const rankImage = document.getElementById('rank-image');
-                rankImage.src = rankImages[data.rank] || "/gogzyImages/bronze1.png";
+                rankImage.src = rankImages[data.rank] || "/bigPaImages/bronze1.png";
 
                 document.getElementById('current-sr').innerText = data.currentSR ?? '0';
                 const dailySRElement = document.getElementById('daily-sr');
@@ -114,8 +113,8 @@
 
         let socket;
         function connectWebSocket() {
-            socket = new WebSocket('wss://warzonesrtracker-7g94.onrender.com');
-            // socket = new WebSocket('ws://localhost:3000');
+            // socket = new WebSocket('wss://warzonesrtracker-7g94.onrender.com');
+            socket = new WebSocket('ws://localhost:3000');
 
             socket.onmessage = function (event) {
                 try {
@@ -123,7 +122,7 @@
                     console.log("WebSocket Data Received:", data);
 
                     const rankImage = document.getElementById('rank-image');
-                    rankImage.src = rankImages[data.rank] || "/gogzyImages/bronze1.png";
+                    rankImage.src = rankImages[data.rank] || "/bigPaImages/bronze1.png";
 
                     document.getElementById('current-sr').innerText = data.currentSR;
                     const dailySRElement = document.getElementById('daily-sr');
@@ -148,7 +147,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('rank-image').src = "/gogzyImages/bronze1.png";
+            document.getElementById('rank-image').src = "/bigPaImages/bronze1.png";
             fetchSRData();
             connectWebSocket();
         });
@@ -157,8 +156,8 @@
 
 <body>
     <div class="container">
-        <img id="rank-image" class="rank-image" src="/gogzyImages/bronze1.png" alt="Rank Image">
-        <div id="current-sr" class="sr-overlay">0</div>
+        <img id="rank-image" class="rank-image" src="/bigPaImages/bronze1.png" alt="Rank Image">
+        <div id="current-sr" class="sr-overlay"></div>
         <div id="daily-sr" class="daily-sr-overlay">0</div>
     </div>
 </body>
