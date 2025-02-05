@@ -114,7 +114,7 @@
 
         let socket;
         function connectWebSocket() {
-            socket = new WebSocket('ws://warzonesrtracker-7g94.onrender.com');
+            socket = new WebSocket('wss://warzonesrtracker-7g94.onrender.com');
             // socket = new WebSocket('ws://localhost:3000');
 
             socket.onmessage = function (event) {
