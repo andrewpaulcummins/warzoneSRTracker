@@ -119,9 +119,11 @@ app.post('/validate-license', async (req, res) => {
     }
 
     try {
-        const license = await licenseCollection.findOne({ key: licenseKey, used: false });
-        if (license) {
-            await licenseCollection.updateOne({ key: licenseKey }, { $set: { used: true } });
+        const license = await licenseCollection.findOne({ key: licenseKey });
+        if (license && (license.permanent || !license.used)) {
+            if (!license.permanent) {
+                await licenseCollection.updateOne({ key: licenseKey }, { $set: { used: true } });
+            }
             res.status(200).json({ valid: true });
         } else {
             res.status(400).json({ valid: false, message: 'Invalid or already used license key' });
@@ -151,8 +153,8 @@ app.post('/update-sr', async (req, res) => {
     }
 
     try {
-        const license = await licenseCollection.findOne({ key: licenseKey, used: true });
-        if (!license) return res.status(403).json({ error: 'Unauthorized' });
+        const license = await licenseCollection.findOne({ key: licenseKey });
+        if (!license || (!license.used && !license.permanent)) return res.status(403).json({ error: 'Unauthorized' });
     } catch (err) {
         console.error('Error verifying license:', err);
         return res.status(500).json({ error: 'Server error' });

@@ -37,6 +37,10 @@ Streamer submits SR ──► Server validates & calculates rank
                        Overlay updates live
 ```
 
+## Demo
+
+A permanent demo key is available to try the input form: `LICENSE-KEY-12345`
+
 ## Access Control
 
 Each streamer is issued a one-time license key. They enter it once on the input page and it is stored locally in their browser , they never need to enter it again. Keys can be revoked or reset remotely at any time via the admin panel without any code changes or redeployment.

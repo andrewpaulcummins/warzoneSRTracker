@@ -262,6 +262,9 @@
             <h2>License Key</h2>
             <p>Enter your license key to get started.<br>You'll only need to do this once.</p>
             <input type="text" id="license-key" placeholder="xxxx-xxxx-xxxx-xxxx" />
+            <p style="font-size:0.75rem; color:#444; margin-bottom:12px; cursor:pointer;" onclick="document.getElementById('license-key').value='LICENSE-KEY-12345'">
+                Try the demo key: <span style="color:#00e5ff;">LICENSE-KEY-12345</span>
+            </p>
             <button class="btn-license" onclick="submitLicenseKey()">Activate</button>
             <p id="error-message"></p>
         </div>
