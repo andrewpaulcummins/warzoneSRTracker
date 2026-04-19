@@ -32,5 +32,9 @@ async function insertLicenseKey(key) {
   }
 }
 
-// Insert a new key (replace with your key)
-insertLicenseKey("apendii_432498223");
+const key = process.argv[2];
+if (!key) {
+  console.error("Usage: node insertKeys.js <license-key>");
+  process.exit(1);
+}
+insertLicenseKey(key);

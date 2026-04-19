@@ -1,187 +1,309 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SR Tracker</title>
+    <title>Warzone SR Tracker</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background: #1c1c1c;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: #eee;
-            flex-direction: column;
-            text-align: center;
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         @font-face {
             font-family: 'GOOD BRUSH';
-            src: url('fonts/GOOD BRUSH.TTF') format('ttf');
+            src: url('fonts/GOOD BRUSH.TTF') format('truetype');
         }
 
-        h1 {
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #080808;
+            color: #eee;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(0, 200, 255, 0.03) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(255, 215, 0, 0.04) 0%, transparent 50%);
+        }
+
+        /* Header */
+        .header {
             text-align: center;
-            font-family: 'GOOD BRUSH';
-            font-size: 2.5rem;
-            color: #00f7ff;
-            margin: 0 auto 20px auto;
-            /* Ensures it's centered */
-            font-weight: 600;
-            text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
-            display: block;
-            /* Ensures it follows the margin rules */
-            width: 100%;
-            /* Ensures full width if needed */
+            margin-bottom: 36px;
         }
 
-        form {
-            background: #2b2b2b;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+        .header h1 {
+            font-family: 'GOOD BRUSH', 'Segoe UI', sans-serif;
+            font-size: 2.6rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #00e5ff, #00a8cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 20px rgba(0, 229, 255, 0.25));
+        }
+
+        .header p {
+            font-size: 0.75rem;
+            color: #333;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 8px;
+        }
+
+        /* Card */
+        .card {
+            background: #0f0f0f;
+            border: 1px solid #1a1a1a;
+            border-radius: 20px;
+            padding: 36px;
             width: 100%;
-            max-width: 400px;
-            text-align: left;
-            border: 2px solid #444;
+            max-width: 420px;
+            box-shadow: 0 0 60px rgba(0, 229, 255, 0.04), 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-80px);
+            background: #0f2a0f;
+            border: 1px solid #1a4a1a;
+            color: #4caf50;
+            padding: 12px 24px;
+            border-radius: 99px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 1000;
+        }
+
+        #toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* Form fields */
+        .field {
+            margin-bottom: 20px;
         }
 
         label {
-            font-family: 'GOOD BRUSH';
-            font-size: 1.2rem;
-            margin-bottom: 10px;
             display: block;
-            font-weight: 500;
-            color: #f1f1f1;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #444;
+            margin-bottom: 8px;
         }
 
-        input[type="text"],
         input[type="number"] {
             width: 100%;
-            padding: 12px;
-            margin: 8px 0 16px 0;
-            border: 2px solid #444;
-            border-radius: 8px;
-            font-family: 'GOOD BRUSH';
-            font-size: 1rem;
-            box-sizing: border-box;
-            background-color: #333;
+            padding: 14px 16px;
+            background: #080808;
+            border: 1px solid #1e1e1e;
+            border-radius: 12px;
             color: #fff;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            font-size: 1.1rem;
+            font-family: 'Segoe UI', sans-serif;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            -moz-appearance: textfield;
         }
 
-        input[type="text"]:focus,
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; appearance: none; }
+
         input[type="number"]:focus {
-            border-color: #00f7ff;
-            box-shadow: 0 0 8px rgba(0, 255, 255, 0.7);
             outline: none;
+            border-color: #00e5ff44;
+            box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.06);
         }
 
-        button {
-            background-color: #00f7ff;
-            color: #1c1c1c;
-            border: none;
-            padding: 12px 24px;
-            font-family: 'GOOD BRUSH';
-            font-size: 1.2rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-        }
+        input::placeholder { color: #2a2a2a; }
 
-        button:hover {
-            background-color: #00a8b8;
-            transform: scale(1.05);
-        }
-
-        button:active {
-            background-color: #008e9e;
-        }
-
-        #license-modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            width: 600px;
-            /* Increased width */
-            height: 400px;
-            /* Increased height */
-            background-color: rgba(0, 0, 0, 0.8);
+        /* Divider */
+        .divider {
             display: flex;
-            justify-content: center;
             align-items: center;
+            gap: 12px;
+            margin: 4px 0 20px;
+            color: #222;
+            font-size: 0.75rem;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #1a1a1a;
+        }
+
+        /* Submit button */
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #00e5ff, #0099bb);
+            color: #080808;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: 'GOOD BRUSH', 'Segoe UI', sans-serif;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            margin-top: 4px;
+        }
+
+        .btn-submit:hover   { opacity: 0.9; }
+        .btn-submit:active  { transform: scale(0.98); }
+
+        /* License overlay */
+        #license-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             z-index: 9999;
-            transform: translate(-50%, -50%);
-            border-radius: 12px;
+            padding: 20px;
         }
 
-        .modal-content {
-            background-color: white;
-            padding: 30px;
-            /* More padding */
-            border-radius: 12px;
+        .license-card {
+            background: #0f0f0f;
+            border: 1px solid #1e1e1e;
+            border-radius: 20px;
+            padding: 40px 36px;
+            width: 100%;
+            max-width: 400px;
             text-align: center;
-            width: 90%;
-            /* Slightly bigger content area */
-            max-width: 450px;
-            /* Limit max width */
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
         }
 
-        #license-key {
-            padding: 12px;
-            width: 80%;
-            font-size: 1.1rem;
+        .license-icon {
+            font-size: 2.4rem;
+            margin-bottom: 16px;
         }
 
-        #licenseBtn {
-            margin-top: 15px;
-            padding: 12px 20px;
-            font-size: 1.1rem;
+        .license-card h2 {
+            font-family: 'GOOD BRUSH', 'Segoe UI', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            color: #00e5ff;
+            margin-bottom: 8px;
         }
 
+        .license-card p {
+            font-size: 0.8rem;
+            color: #444;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
 
-        #licenseBtn:hover {
-            background-color: #00a8b8;
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 16px;
+            background: #080808;
+            border: 1px solid #1e1e1e;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 0.95rem;
+            font-family: monospace;
+            letter-spacing: 1px;
+            text-align: center;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            margin-bottom: 12px;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #00e5ff44;
+            box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.06);
+        }
+
+        input[type="text"]::placeholder { color: #2a2a2a; letter-spacing: 0; }
+
+        .btn-license {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #00e5ff, #0099bb);
+            color: #080808;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .btn-license:hover  { opacity: 0.9; }
+        .btn-license:active { transform: scale(0.98); }
+
+        #error-message {
+            color: #e74c3c;
+            font-size: 0.82rem;
+            margin-top: 12px;
+            min-height: 18px;
         }
     </style>
 </head>
-
 <body>
-    <!-- License Modal -->
-    <div id="license-modal" style="display: none;">
-        <div class="modal-content">
-            <h2>Enter License Key</h2>
-            <input type="text" id="license-key" placeholder="Enter your key" />
-            <button id="licenseBtn" onclick="submitLicenseKey()">Submit</button>
-            <p id="error-message" style="color: red;"></p>
+
+    <div id="toast">SR updated!</div>
+
+    <!-- License overlay -->
+    <div id="license-overlay" style="display:none;">
+        <div class="license-card">
+            <div class="license-icon">🔑</div>
+            <h2>License Key</h2>
+            <p>Enter your license key to get started.<br>You'll only need to do this once.</p>
+            <input type="text" id="license-key" placeholder="xxxx-xxxx-xxxx-xxxx" />
+            <button class="btn-license" onclick="submitLicenseKey()">Activate</button>
+            <p id="error-message"></p>
         </div>
     </div>
 
-    <!-- SR Form -->
-    <div>
-        <h1>Enter SR Information</h1>
+    <!-- Main form -->
+    <div class="header">
+        <h1>SR Tracker</h1>
+        <p>Update your rank in real time</p>
+    </div>
+
+    <div class="card">
         <form id="srForm">
-            <label for="startSR">Starting SR:</label>
-            <input type="number" id="startSR" placeholder="Enter your starting SR" required><br>
+            <div class="field">
+                <label for="startSR">Starting SR</label>
+                <input type="number" id="startSR" placeholder="0" required />
+            </div>
 
-            <label for="currentSR">Current SR:</label>
-            <input type="number" id="currentSR" placeholder="Enter your current SR" required><br>
+            <div class="divider">current session</div>
 
-            <button type="submit">Submit</button>
+            <div class="field">
+                <label for="currentSR">Current SR</label>
+                <input type="number" id="currentSR" placeholder="0" required />
+            </div>
+
+            <button type="submit" class="btn-submit">Update Overlay</button>
         </form>
     </div>
 
     <script>
-        // SR Form submission handler
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
         const form = document.getElementById('srForm');
         form.addEventListener('submit', function (event) {
             event.preventDefault();
 
-            const licenseKey = localStorage.getItem('licenseKey'); // Get the stored license key
+            const licenseKey = localStorage.getItem('licenseKey');
             const startSR = parseInt(document.getElementById('startSR').value);
             const currentSR = parseInt(document.getElementById('currentSR').value);
 
@@ -191,35 +313,34 @@
                 body: JSON.stringify({ startSR, currentSR, licenseKey })
             }).then(response => {
                 if (response.ok) {
-                    console.log("SR data updated successfully!");
+                    document.getElementById('startSR').value = currentSR;
+                    document.getElementById('currentSR').value = '';
+                    showToast('SR updated!');
+                } else if (response.status === 403) {
+                    localStorage.removeItem('licenseKey');
+                    document.getElementById('license-overlay').style.display = 'flex';
                 } else {
-                    console.error("Error updating SR data.");
+                    showToast('Something went wrong.');
                 }
-
-                document.getElementById('currentSR').value = ''; // Clears the currentSR input field
             });
         });
 
-        // Check if license is already stored
-        window.onload = async () => {
-            const storedLicenseKey = localStorage.getItem('licenseKey');
-
-            if (storedLicenseKey) {
-                // License key is already stored, skip the modal
-                return;
+        window.onload = () => {
+            if (!localStorage.getItem('licenseKey')) {
+                document.getElementById('license-overlay').style.display = 'flex';
             }
-
-            // Show the modal if no valid license is stored
-            document.getElementById('license-modal').style.display = 'block';
         };
 
-        // Submit the license key to the server
+        document.getElementById('license-key').addEventListener('keydown', e => {
+            if (e.key === 'Enter') submitLicenseKey();
+        });
+
         async function submitLicenseKey() {
-            const licenseKey = document.getElementById('license-key').value;
+            const licenseKey = document.getElementById('license-key').value.trim();
             const errorMessage = document.getElementById('error-message');
 
             if (!licenseKey) {
-                errorMessage.innerText = "Please enter a valid license key!";
+                errorMessage.textContent = 'Please enter your license key.';
                 return;
             }
 
@@ -233,21 +354,16 @@
                 const data = await response.json();
 
                 if (data.valid) {
-                    // Store the license key in localStorage so the user doesn't have to enter it again
                     localStorage.setItem('licenseKey', licenseKey);
-
-                    // Close the modal
-                    document.getElementById('license-modal').style.display = 'none';
+                    document.getElementById('license-overlay').style.display = 'none';
+                    showToast('Activated!');
                 } else {
-                    errorMessage.innerText = data.message || "Invalid license key!";
+                    errorMessage.textContent = data.message || 'Invalid license key.';
                 }
-            } catch (err) {
-                console.error(err);
-                errorMessage.innerText = "An error occurred. Please try again later.";
+            } catch {
+                errorMessage.textContent = 'Could not connect. Try again.';
             }
         }
-
     </script>
 </body>
-
 </html>

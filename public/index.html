@@ -49,24 +49,6 @@
             left: 75%;
         }
 
-        #license-container {
-            position: absolute;
-            top: 20%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-            color: white;
-            text-align: center;
-        }
-
-        #license-container input {
-            padding: 5px;
-            margin-top: 10px;
-        }
-
-        /* Add styles for positive/negative dailySR */
         .positive-sr {
             color: limegreen;
         }
@@ -98,105 +80,57 @@
             "Iridescent": "images/iridescent.png"
         };
 
-        async function validateLicense() {
-            const licenseKey = document.getElementById('license-key').value;
-            const response = await fetch('/validate-key', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ licenseKey })
-            });
-            const data = await response.json();
-
-            if (data.valid) {
-                localStorage.setItem('licenseKey', licenseKey);
-                document.getElementById('license-container').style.display = 'none';
-                fetchSRData();
-            } else {
-                alert('Invalid License Key!');
-            }
-        }
-
-        async function fetchSRData() {
-            const response = await fetch('/sr-data');
-            const data = await response.json();
-
-            // Check if rankImages contains the rank and update the rank image
+        function applyData(data) {
             if (rankImages[data.rank]) {
                 document.getElementById('rank-image').src = rankImages[data.rank];
             }
 
-            // Ensure currentSR and dailySR are set correctly
-            if (data.currentSR !== undefined) {
-                document.getElementById('current-sr').innerText = data.currentSR;
-            } else {
-                document.getElementById('current-sr').innerText = '0'; // Fallback value
-            }
+            document.getElementById('current-sr').innerText = data.currentSR ?? '0';
 
-            if (data.dailySR !== undefined) {
-                const dailySRText = data.dailySR >= 0 ? `+${data.dailySR}` : data.dailySR;
-                document.getElementById('daily-sr').innerText = dailySRText;
+            const dailySrElement = document.getElementById('daily-sr');
+            const dailySR = data.dailySR ?? 0;
+            dailySrElement.innerText = dailySR >= 0 ? `+${dailySR}` : dailySR;
+            dailySrElement.classList.toggle('positive-sr', dailySR >= 0);
+            dailySrElement.classList.toggle('negative-sr', dailySR < 0);
+        }
 
-                // Apply color change based on positive/negative daily SR
-                const dailySrElement = document.getElementById('daily-sr');
-                if (data.dailySR >= 0) {
-                    dailySrElement.classList.add('positive-sr');
-                    dailySrElement.classList.remove('negative-sr');
-                } else {
-                    dailySrElement.classList.add('negative-sr');
-                    dailySrElement.classList.remove('positive-sr');
-                }
-            } else {
-                document.getElementById('daily-sr').innerText = '0'; // Fallback value
+        async function fetchSRData() {
+            try {
+                const response = await fetch('/sr-data');
+                const data = await response.json();
+                applyData(data);
+            } catch (err) {
+                console.error('Error fetching SR data:', err);
             }
         }
 
         let socket;
         function connectWebSocket() {
-            socket = new WebSocket('wss://warzonesrtracker.onrender.com');
-            // socket = new WebSocket('ws://localhost:3000'); 
+            const wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws';
+            socket = new WebSocket(`${wsProtocol}://${location.host}`);
 
             socket.onmessage = function (event) {
-                const data = JSON.parse(event.data); // Parse incoming JSON data
-                if (rankImages[data.rank]) {
-                    document.getElementById('rank-image').src = rankImages[data.rank];
-                }
-                document.getElementById('current-sr').innerText = data.currentSR;
-
-                // Update dailySR with color changes for positive or negative values
-                const dailySRText = data.dailySR >= 0 ? `+${data.dailySR}` : data.dailySR;
-                document.getElementById('daily-sr').innerText = dailySRText;
-
-                const dailySrElement = document.getElementById('daily-sr');
-                if (data.dailySR >= 0) {
-                    dailySrElement.classList.add('positive-sr');
-                    dailySrElement.classList.remove('negative-sr');
-                } else {
-                    dailySrElement.classList.add('negative-sr');
-                    dailySrElement.classList.remove('positive-sr');
+                try {
+                    applyData(JSON.parse(event.data));
+                } catch (err) {
+                    console.error('Error processing WebSocket message:', err);
                 }
             };
 
             socket.onclose = () => {
                 console.log('WebSocket closed, reconnecting...');
-                setTimeout(connectWebSocket, 1000);  // Try to reconnect after 1 second
+                setTimeout(connectWebSocket, 1000);
             };
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            const savedKey = localStorage.getItem('licenseKey');
-            if (savedKey) {
-                document.getElementById('license-container').style.display = 'none';
-                fetchSRData();
-            }
-            connectWebSocket();  // Ensure WebSocket connection when the page loads
+            fetchSRData();
+            connectWebSocket();
         });
     </script>
 </head>
 
 <body>
-    <div id="license-container">
-     
-    </div>
     <div class="container">
         <img id="rank-image" class="rank-image" src="" alt="Rank Image">
         <div id="current-sr" class="sr-overlay">0</div>

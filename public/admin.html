@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warzone Tracker — Admin</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #080808;
+            color: #eee;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 48px 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #ffd700, #ffaa00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 0.8rem;
+            color: #555;
+            margin-top: 6px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Sections */
+        #login-section, #admin-section {
+            width: 100%;
+            max-width: 640px;
+        }
+
+        #admin-section { display: none; }
+
+        /* Status pill */
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 99px;
+            padding: 5px 14px;
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 28px;
+            letter-spacing: 0.5px;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #333;
+            transition: background 0.3s;
+        }
+
+        .status-dot.online  { background: #4caf50; box-shadow: 0 0 6px #4caf50; }
+        .status-dot.offline { background: #e74c3c; box-shadow: 0 0 6px #e74c3c; }
+
+        /* Cards */
+        .card {
+            background: #111;
+            border: 1px solid #1e1e1e;
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .card h2 {
+            font-size: 0.8rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        /* Inputs */
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="password"], input[type="text"] {
+            flex: 1;
+            padding: 11px 16px;
+            background: #0d0d0d;
+            border: 1px solid #222;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus { outline: none; border-color: #ffd700; }
+        input::placeholder { color: #444; }
+
+        /* Buttons */
+        button {
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+            white-space: nowrap;
+        }
+
+        button:active { transform: scale(0.97); }
+        button:hover { opacity: 0.9; }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #0d0d0d;
+            padding: 11px 22px;
+        }
+
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            border-radius: 8px;
+        }
+
+        .btn-danger  { background: #1f0808; color: #e74c3c; border: 1px solid #2a0a0a; }
+        .btn-warning { background: #1a1100; color: #f39c12; border: 1px solid #2a1c00; }
+
+        #error-msg {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            min-height: 20px;
+        }
+
+        /* New key display */
+        #new-key-display {
+            margin-top: 16px;
+            padding: 14px 16px;
+            background: #0d0d0d;
+            border: 1px dashed #ffd70044;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #ffd700;
+            word-break: break-all;
+            display: none;
+            position: relative;
+        }
+
+        #new-key-display::before {
+            content: 'NEW KEY';
+            display: block;
+            font-size: 0.65rem;
+            color: #664400;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* Keys list */
+        #keys-list { list-style: none; }
+
+        #keys-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 13px 0;
+            border-bottom: 1px solid #161616;
+            gap: 12px;
+        }
+
+        #keys-list li:last-child { border-bottom: none; }
+
+        .key-text {
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #666;
+            word-break: break-all;
+            flex: 1;
+        }
+
+        .badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 99px;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+
+        .badge-used   { background: #1a1a1a; color: #444; }
+        .badge-unused { background: #0d1f0d; color: #4caf50; border: 1px solid #1a3a1a; }
+
+        .key-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+        .empty-state {
+            text-align: center;
+            padding: 24px 0;
+            color: #333;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Warzone Tracker</h1>
+        <p>Admin Panel</p>
+    </div>
+
+    <div id="login-section">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">🔒</div>
+                <h2>Sign In</h2>
+            </div>
+            <div class="input-row">
+                <input type="password" id="password-input" placeholder="Admin password" />
+                <button class="btn-primary" onclick="login()">Sign In</button>
+            </div>
+            <p id="error-msg"></p>
+        </div>
+    </div>
+
+    <div id="admin-section">
+        <div class="status-pill">
+            <span class="status-dot" id="status-dot"></span>
+            <span id="health-status">Checking…</span>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">✨</div>
+                <h2>Generate License Key</h2>
+            </div>
+            <button class="btn-primary" onclick="generateKey()">Generate New Key</button>
+            <div id="new-key-display"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">🗝️</div>
+                <h2>License Keys</h2>
+            </div>
+            <ul id="keys-list"><li class="empty-state">Loading…</li></ul>
+        </div>
+    </div>
+
+    <script>
+        let adminPassword = '';
+
+        async function login() {
+            const pw = document.getElementById('password-input').value;
+            const res = await fetch('/admin/keys', {
+                headers: { 'x-admin-password': pw }
+            });
+
+            if (res.ok) {
+                adminPassword = pw;
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('admin-section').style.display = 'block';
+                checkHealth();
+                renderKeys(await res.json());
+            } else {
+                document.getElementById('error-msg').textContent = 'Incorrect password.';
+            }
+        }
+
+        document.getElementById('password-input').addEventListener('keydown', e => {
+            if (e.key === 'Enter') login();
+        });
+
+        async function checkHealth() {
+            const dot = document.getElementById('status-dot');
+            const label = document.getElementById('health-status');
+            try {
+                const res = await fetch('/health');
+                const data = await res.json();
+                const ok = data.status === 'ok';
+                label.textContent = ok ? 'Server online' : 'DB disconnected';
+                dot.className = 'status-dot ' + (ok ? 'online' : 'offline');
+            } catch {
+                label.textContent = 'Unreachable';
+                dot.className = 'status-dot offline';
+            }
+        }
+
+        async function generateKey() {
+            const res = await fetch('/admin/generate-key', {
+                method: 'POST',
+                headers: { 'x-admin-password': adminPassword }
+            });
+            const data = await res.json();
+            const display = document.getElementById('new-key-display');
+            display.textContent = data.key;
+            display.style.display = 'block';
+            await loadKeys();
+        }
+
+        async function loadKeys() {
+            const res = await fetch('/admin/keys', {
+                headers: { 'x-admin-password': adminPassword }
+            });
+            renderKeys(await res.json());
+        }
+
+        function renderKeys(keys) {
+            const list = document.getElementById('keys-list');
+            if (!keys.length) {
+                list.innerHTML = '<li class="empty-state">No keys yet.</li>';
+                return;
+            }
+            list.innerHTML = keys.map(k => `
+                <li>
+                    <span class="key-text">${k.key}</span>
+                    <span class="badge ${k.used ? 'badge-used' : 'badge-unused'}">${k.used ? 'Used' : 'Active'}</span>
+                    <div class="key-actions">
+                        ${k.used ? `<button class="btn-sm btn-warning" onclick="resetKey('${k.key}')">Reset</button>` : ''}
+                        <button class="btn-sm btn-danger" onclick="revokeKey('${k.key}')">Revoke</button>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        async function resetKey(key) {
+            if (!confirm(`Reset this key? The user will need to re-enter it.`)) return;
+            await fetch(`/admin/keys/${key}/reset`, {
+                method: 'PATCH',
+                headers: { 'x-admin-password': adminPassword }
+            });
+            await loadKeys();
+        }
+
+        async function revokeKey(key) {
+            if (!confirm(`Permanently revoke this key?`)) return;
+            await fetch(`/admin/keys/${key}`, {
+                method: 'DELETE',
+                headers: { 'x-admin-password': adminPassword }
+            });
+            await loadKeys();
+        }
+    </script>
+</body>
+</html>
